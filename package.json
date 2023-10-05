@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "serverless-bundle": "^6.0.0"
+  }
+}
