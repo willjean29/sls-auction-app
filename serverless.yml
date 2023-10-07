@@ -10,29 +10,15 @@ provider:
   memorySize: 512
   stage: ${opt:stage, 'dev'}
   region: us-east-1
+  environment:
+    AUCTIONS_TABLE_NAME: ${self:custom.AuctionsTable.name}
   iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:GetItem
-        - dynamodb:Scan
-      Resource:
-        - arn:aws:dynamodb:${self:provider.region}:*:table/AuctionsTable
+    - ${file(serverless/iam/AuctionsTableIAM.yml):AuctionsTableIAM}
 
 resources:
   Resources:
     AuctionsTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: AuctionsTable
-        BillingMode: PAY_PER_REQUEST
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
+      ${file(serverless/resources/AuctionsTable.yml):AuctionsTable}
      
 functions:
   createAuction:
@@ -43,6 +29,9 @@ functions:
           method: POST
 
 custom:
+  AuctionsTable:
+    name: !Ref AuctionsTable
+    arn:  !GetAtt AuctionsTable.Arn
   bundle:
     linting: false
   
