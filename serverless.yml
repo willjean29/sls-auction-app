@@ -6,10 +6,19 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs16.x
   memorySize: 512
   stage: ${opt:stage, 'dev'}
   region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:GetItem
+        - dynamodb:Scan
+      Resource:
+        - arn:aws:dynamodb:${self:provider.region}:*:table/AuctionsTable
 
 resources:
   Resources:
