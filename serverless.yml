@@ -25,8 +25,15 @@ functions:
     handler: src/handlers/createAuction.handler
     events: 
       - http:
-          path: /auction
+          path: /auctions
           method: POST
+
+  getAuctions:
+    handler: src/handlers/getAuctions.handler
+    events: 
+      - http:
+          path: /auctions
+          method: GET
 
 custom:
   AuctionsTable:
