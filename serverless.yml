@@ -49,6 +49,11 @@ functions:
           path: /auctions/{id}
           method: PATCH
 
+  processAuctions:
+    handler: src/handlers/processAuctions.handler
+    # events: 
+    #   - schedule: rate(1 minute)
+
 custom:
   AuctionsTable:
     name: !Ref AuctionsTable
