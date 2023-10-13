@@ -13,6 +13,7 @@ provider:
   environment:
     AUTH0_PUBLIC_KEY: ${file(secret.pem)}
     USERS_TABLE_NAME: ${self:custom.UsersTable.name}
+    SECRET_KEY: ${self:custom.UsersTable.arn}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -69,9 +70,19 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          - AttributeName: email
+            AttributeType: S
         KeySchema:
-          - AttributeName: id
+          - AttributeName: email
             KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UniqueIdIndex
+            KeySchema:
+              - AttributeName: id
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+                
 
     # This response is needed for custom authorizer failures cors support ¯\_(ツ)_/¯
     GatewayResponse:
