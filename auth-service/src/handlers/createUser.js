@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import AWS from 'aws-sdk';
-import { InternalServerError } from 'http-errors';
+import { InternalServerError, BadRequest } from 'http-errors';
 import validator from '@middy/validator';
 import { transpileSchema } from '@middy/validator/transpile'
 import commonMiddleware from '../lib/commonMiddleware';
@@ -16,6 +16,19 @@ async function createUser(event, context) {
     password,
     createdAt: now.toISOString(),
   }
+  const existingUser = await dynamodb.query({
+    TableName: process.env.USERS_TABLE_NAME,
+    IndexName: 'UniqueEmailIndex',
+    KeyConditionExpression: 'email = :email',
+    ExpressionAttributeValues: {
+      ':email': email,
+    },
+  }).promise();
+
+  if (existingUser.Items.length > 0) {
+    throw new BadRequest('Email already exists');
+  }
+
   try {
     await dynamodb.put({
       TableName: process.env.USERS_TABLE_NAME,
