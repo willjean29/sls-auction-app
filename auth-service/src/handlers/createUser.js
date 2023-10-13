@@ -18,16 +18,12 @@ async function createUser(event, context) {
     password: hashedPassword,
     createdAt: now.toISOString(),
   }
-  const existingUser = await dynamodb.query({
+  const existingUser = await dynamodb.get({
     TableName: process.env.USERS_TABLE_NAME,
-    IndexName: 'UniqueEmailIndex',
-    KeyConditionExpression: 'email = :email',
-    ExpressionAttributeValues: {
-      ':email': email,
-    },
+    Key: { email },
   }).promise();
 
-  if (existingUser.Items.length > 0) {
+  if (existingUser.Item) {
     throw new BadRequest('Email already exists');
   }
 

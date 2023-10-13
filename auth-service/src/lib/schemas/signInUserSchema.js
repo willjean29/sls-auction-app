@@ -10,12 +10,9 @@ const schema = {
         },
         password: {
           type: 'string'
-        },
-        name: {
-          type: 'string'
         }
       },
-      required: ['email', 'password', 'name']
+      required: ['email', 'password']
     }
   },
   required: ['body']

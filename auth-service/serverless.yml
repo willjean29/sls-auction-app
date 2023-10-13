@@ -51,6 +51,13 @@ functions:
           path: users
           method: POST
           cors: true
+  signingUser:
+    handler: src/handlers/signInUser.handler
+    events:
+      - http:
+          path: auth/signin
+          method: POST
+          cors: true
 
 resources:
   Resources:
@@ -62,18 +69,9 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
-          - AttributeName: email
-            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-        GlobalSecondaryIndexes:
-          - IndexName: UniqueEmailIndex
-            KeySchema:
-              - AttributeName: email
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
 
     # This response is needed for custom authorizer failures cors support ¯\_(ツ)_/¯
     GatewayResponse:
