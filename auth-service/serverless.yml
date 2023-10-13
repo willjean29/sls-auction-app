@@ -12,6 +12,18 @@ provider:
   region: us-east-1
   environment:
     AUTH0_PUBLIC_KEY: ${file(secret.pem)}
+    USERS_TABLE_NAME: ${self:custom.UsersTable.name}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:GetItem
+        - dynamodb:Scan
+        - dynamodb:Query
+      Resource:
+        - ${self:custom.UsersTable.arn}
+        - !Join ['/', ['${self:custom.UsersTable.arn}', 'index', 'UniqueEmailIndex']]
 
 functions:
   auth:
@@ -32,9 +44,37 @@ functions:
           method: POST
           authorizer: auth
           cors: true
+  createUser:
+    handler: src/handlers/createUser.handler
+    events:
+      - http:
+          path: users
+          method: POST
+          cors: true
 
 resources:
   Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UsersTable-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UniqueEmailIndex
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+
     # This response is needed for custom authorizer failures cors support ¯\_(ツ)_/¯
     GatewayResponse:
       Type: 'AWS::ApiGateway::GatewayResponse'
@@ -57,6 +97,9 @@ resources:
           Ref: 'ApiGatewayRestApi'
         StatusCode: '401'
 custom:
+  UsersTable:
+    name: !Ref UsersTable
+    arn:  !GetAtt UsersTable.Arn
   bundle:
     linting: false
 
