@@ -8,6 +8,7 @@
     "@middy/http-event-normalizer": "^4.6.5",
     "@middy/http-json-body-parser": "^4.6.5",
     "@middy/validator": "^4.6.5",
+    "bcryptjs": "^2.4.3",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "uuid": "^9.0.1"

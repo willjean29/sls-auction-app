@@ -5,15 +5,17 @@ import validator from '@middy/validator';
 import { transpileSchema } from '@middy/validator/transpile'
 import commonMiddleware from '../lib/commonMiddleware';
 import createUserSchema from '../lib/schemas/createUserSchema';
+import { hashPassword } from '../lib/hashPassword';
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 async function createUser(event, context) {
   const { email, password } = event.body;
   const now = new Date();
+  const hashedPassword = await hashPassword(password);
   const user = {
     id: uuid(),
     email,
-    password,
+    password: hashedPassword,
     createdAt: now.toISOString(),
   }
   const existingUser = await dynamodb.query({
