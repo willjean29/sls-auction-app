@@ -14,6 +14,7 @@ provider:
     AUTH0_PUBLIC_KEY: ${file(secret.pem)}
     USERS_TABLE_NAME: ${self:custom.UsersTable.name}
     SECRET_KEY: ${self:custom.UsersTable.arn}
+    API_GATEWAY_AUCTION: ${self:custom.ApiGatewayAuction.arn}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -24,12 +25,16 @@ provider:
         - dynamodb:Query
       Resource:
         - ${self:custom.UsersTable.arn}
-        - !Join ['/', ['${self:custom.UsersTable.arn}', 'index', 'UniqueEmailIndex']]
-
+        - !Join ['/', ['${self:custom.UsersTable.arn}', 'index', 'UniqueIdIndex']]
+        
 functions:
   auth:
     handler: src/handlers/auth.handler
-    cors: true
+    events:
+      - http:
+          path: /auth
+          method: post
+          cors: true
   publicEndpoint:
     handler: src/handlers/public.handler
     events:
@@ -105,10 +110,23 @@ resources:
         RestApiId:
           Ref: 'ApiGatewayRestApi'
         StatusCode: '401'
+  
+    AuthLambdaPermission:
+      Type: "AWS::Lambda::Permission"
+      Properties:
+        FunctionName: 
+          Fn::GetAtt:
+            - auth
+            - Arn
+        Action: "lambda:InvokeFunction"
+        Principal: "apigateway.amazonaws.com"
+        SourceArn: "arn:aws:execute-api:us-east-1:338975015168:ymxsw3y1ee/*/*"
 custom:
   UsersTable:
     name: !Ref UsersTable
     arn:  !GetAtt UsersTable.Arn
+  ApiGatewayAuction:
+    arn: arn:aws:execute-api:us-east-1:338975015168:ymxsw3y1ee/*/*
   bundle:
     linting: false
 

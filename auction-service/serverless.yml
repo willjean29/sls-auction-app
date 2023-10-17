@@ -35,7 +35,9 @@ functions:
       - http:
           path: /auctions
           method: GET
-          authorizer: ${self:custom.authorizer}
+          cors: true
+          integration: lambda
+          authorizer: arn:aws:lambda:us-east-1:338975015168:function:auth-service-dev-auth
 
   getAuction:
     handler: src/handlers/getAuction.handler
