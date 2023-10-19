@@ -111,16 +111,6 @@ resources:
           Ref: 'ApiGatewayRestApi'
         StatusCode: '401'
   
-    AuthLambdaPermission:
-      Type: "AWS::Lambda::Permission"
-      Properties:
-        FunctionName: 
-          Fn::GetAtt:
-            - auth
-            - Arn
-        Action: "lambda:InvokeFunction"
-        Principal: "apigateway.amazonaws.com"
-        SourceArn: "arn:aws:execute-api:us-east-1:338975015168:ymxsw3y1ee/*/*"
 custom:
   UsersTable:
     name: !Ref UsersTable
