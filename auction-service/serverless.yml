@@ -27,6 +27,7 @@ functions:
       - http:
           path: /auctions
           method: POST
+          cors: true
           authorizer: ${self:custom.authorizer}
 
   getAuctions:
@@ -36,8 +37,7 @@ functions:
           path: /auctions
           method: GET
           cors: true
-          integration: lambda
-          authorizer: arn:aws:lambda:us-east-1:338975015168:function:auth-service-dev-auth
+          authorizer: ${self:custom.authorizer}
 
   getAuction:
     handler: src/handlers/getAuction.handler
@@ -45,6 +45,7 @@ functions:
       - http:
           path: /auctions/{id}
           method: GET
+          cors: true
           authorizer: ${self:custom.authorizer}
 
   placeBid:
@@ -53,6 +54,7 @@ functions:
       - http:
           path: /auctions/{id}
           method: PATCH
+          cors: true
           authorizer: ${self:custom.authorizer}
 
   processAuctions:

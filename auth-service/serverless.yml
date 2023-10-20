@@ -30,11 +30,6 @@ provider:
 functions:
   auth:
     handler: src/handlers/auth.handler
-    events:
-      - http:
-          path: /auth
-          method: post
-          cors: true
   publicEndpoint:
     handler: src/handlers/public.handler
     events:
