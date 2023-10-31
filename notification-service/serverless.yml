@@ -1,10 +1,23 @@
 service: notification-service
 frameworkVersion: '3'
 
+plugins:
+  - serverless-bundle
+
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs16.x
+  memorySize: 512
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  iamRoleStatements:
+    - ${file(serverless/iam/SendMailIAM.yml):SendMailIAM}
 
 functions:
-  function1:
-    handler: index.handler
+  sendMail:
+    handler: src/handlers/sendMail.handler
+
+
+custom:
+  bundle:
+    linting: false
