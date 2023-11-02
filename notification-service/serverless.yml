@@ -30,6 +30,9 @@ functions:
 custom:
   mailQueue:
     name: MailQueue-${self:provider.stage}
-    arn: !GetAtt MailQueue.arn
+    arn: 
+      Fn::GetAtt:
+        - MailQueue
+        - Arn
   bundle:
     linting: false
