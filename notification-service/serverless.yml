@@ -12,12 +12,24 @@ provider:
   region: us-east-1
   iamRoleStatements:
     - ${file(serverless/iam/SendMailIAM.yml):SendMailIAM}
+    - ${file(serverless/iam/MailQueueIAM.yml):MailQueueIAM}
+
+resources:
+  Resources:
+    MailQueue:
+      ${file(serverless/resources/MailQueue.yml):MailQueue}
 
 functions:
   sendMail:
     handler: src/handlers/sendMail.handler
-
+    events:
+      - sqs:
+          arn: ${self:custom.mailQueue.arn}
+          batchSize: 1
 
 custom:
+  mailQueue:
+    name: MailQueue-${self:provider.stage}
+    arn: !GetAtt MailQueue.arn
   bundle:
     linting: false
