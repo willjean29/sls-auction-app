@@ -18,6 +18,9 @@ resources:
   Resources:
     MailQueue:
       ${file(serverless/resources/MailQueue.yml):MailQueue}
+  Outputs:
+    MailQueueArn: ${file(serverless/resources/MailQueue.yml):Outputs.MailQueueArn}
+    MailQueueUrl: ${file(serverless/resources/MailQueue.yml):Outputs.MailQueueUrl}
 
 functions:
   sendMail:
@@ -34,5 +37,6 @@ custom:
       Fn::GetAtt:
         - MailQueue
         - Arn
+    url: !Ref MailQueue
   bundle:
     linting: false

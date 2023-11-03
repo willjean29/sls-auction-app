@@ -11,7 +11,6 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: us-east-1
   environment:
-    AUTH0_PUBLIC_KEY: ${file(secret.pem)}
     USERS_TABLE_NAME: ${self:custom.UsersTable.name}
     SECRET_KEY: ${self:custom.UsersTable.arn}
     API_GATEWAY_AUCTION: ${self:custom.ApiGatewayAuction.arn}
