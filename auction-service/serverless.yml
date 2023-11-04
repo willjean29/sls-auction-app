@@ -13,14 +13,19 @@ provider:
   environment:
     AUCTIONS_TABLE_NAME: ${self:custom.AuctionsTable.name}
     MAIL_QUEUE_URL: ${self:custom.MailQueue.url}
+    AUCTIONS_BUCKET_NAME: ${self:custom.AuctionsBucket.name}
   iamRoleStatements:
     - ${file(serverless/iam/AuctionsTableIAM.yml):AuctionsTableIAM}
     - ${file(serverless/iam/MailQueueIAM.yml):MailQueueIAM}
-
+    - ${file(serverless/iam/AuctionsBucketIAM.yml):AuctionsBucketIAM}
 resources:
   Resources:
     AuctionsTable:
       ${file(serverless/resources/AuctionsTable.yml):AuctionsTable}
+    AuctionsBucket:
+      ${file(serverless/resources/AuctionsBucket.yml):AuctionsBucket}
+    AuctionsBucketPolicy:
+      ${file(serverless/resources/AuctionsBucket.yml):AuctionsBucketPolicy} 
      
 functions:
   createAuction:
@@ -59,6 +64,15 @@ functions:
           cors: true
           authorizer: ${self:custom.authorizer}
 
+  uploadAuctionPicture:
+    handler: src/handlers/uploadAuctionPicture.handler
+    events: 
+      - http:
+          path: /auctions/{id}/picture
+          method: POST
+          cors: true
+          authorizer: ${self:custom.authorizer}
+
   processAuctions:
     handler: src/handlers/processAuctions.handler
     # events: 
@@ -72,6 +86,10 @@ custom:
   MailQueue:
     arn: ${cf:notification-service-${self:provider.stage}.MailQueueArn}
     url: ${cf:notification-service-${self:provider.stage}.MailQueueUrl}
+  AuctionsBucket:
+    name: auctions-bucket-qwerty1485-${self:provider.stage}
+    # arn: ${cf:${self:service}-${self:provider.stage}-auctions-bucket.Arn}
+    region: ${self:provider.region}
   bundle:
     linting: false
   
