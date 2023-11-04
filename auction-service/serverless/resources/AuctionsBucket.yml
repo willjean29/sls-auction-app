@@ -6,12 +6,14 @@ AuctionsBucket:
 AuctionsBucketPolicy:
   Type: AWS::S3::BucketPolicy
   Properties:
-    Bucket: !Ref AuctionsBucket
+    Bucket: 
+      Ref: AuctionsBucket
     PolicyDocument:
       Statement:
-        - Sid: PublicRead
-          Effect: Allow
-          Principal: '*'
+        - Effect: "Allow"
+          Principal:
+            AWS:
+              - Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
           Action: 
-            - s3:GetObject
+            - "s3:GetObject"
           Resource: arn:aws:s3:::${self:custom.AuctionsBucket.name}/*
