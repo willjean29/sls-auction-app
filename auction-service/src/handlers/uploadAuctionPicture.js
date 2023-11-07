@@ -1,5 +1,5 @@
 import middy from '@middy/core';
-import { InternalServerError } from 'http-errors';
+import { InternalServerError, Forbidden } from 'http-errors';
 import httpErrorHandler from '@middy/http-error-handler';
 import { uploadPictureToS3 } from "../lib/uploadPictureToS3";
 import { getAuctionById } from "./getAuction";
@@ -7,7 +7,11 @@ import { setAuctionPictureUrl } from '../lib/setAuctionPictureUrl';
 
 export async function uploadAuctionPicture(event) {
   const { id } = event.pathParameters;
+  const { email } = event.requestContext.authorizer;
   const auction = await getAuctionById(id);
+  if (auction.seller !== email) {
+    throw new Forbidden('You are not the seller to update of this auction')
+  }
   const base64 = event.body.replace(/^data:image\/\w+;base64,/, "");
   const buffer = Buffer.from(base64, "base64");
   let updateAuction;
