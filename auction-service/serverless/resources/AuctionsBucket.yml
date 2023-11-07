@@ -2,6 +2,11 @@ AuctionsBucket:
   Type: AWS::S3::Bucket
   Properties:
     BucketName: ${self:custom.AuctionsBucket.name}
+    PublicAccessBlockConfiguration:
+      BlockPublicAcls: true
+    OwnershipControls:
+      Rules:
+        - ObjectOwnership: ObjectWriter
     LifecycleConfiguration:
       Rules:
         - Id: ExpirePictures
@@ -16,9 +21,7 @@ AuctionsBucketPolicy:
     PolicyDocument:
       Statement:
         - Effect: "Allow"
-          Principal:
-            AWS:
-              - Fn::Sub: arn:aws:iam::${AWS::AccountId}:root
+          Principal: "*"
           Action: 
             - "s3:GetObject"
           Resource: arn:aws:s3:::${self:custom.AuctionsBucket.name}/*
