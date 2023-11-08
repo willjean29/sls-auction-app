@@ -1,10 +1,12 @@
 import middy from '@middy/core';
 import { InternalServerError, Forbidden } from 'http-errors';
+import validator from '@middy/validator';
+import { transpileSchema } from '@middy/validator/transpile'
 import httpErrorHandler from '@middy/http-error-handler';
 import { uploadPictureToS3 } from "../lib/uploadPictureToS3";
 import { getAuctionById } from "./getAuction";
 import { setAuctionPictureUrl } from '../lib/setAuctionPictureUrl';
-
+import uploadAuctionPictureSchema from '../lib/schemas/uploadAuctionPictureSchema';
 export async function uploadAuctionPicture(event) {
   const { id } = event.pathParameters;
   const { email } = event.requestContext.authorizer;
@@ -30,4 +32,5 @@ export async function uploadAuctionPicture(event) {
 }
 
 export const handler = middy(uploadAuctionPicture)
-  .use(httpErrorHandler());
+  .use(httpErrorHandler())
+  .use(validator({ eventSchema: transpileSchema(uploadAuctionPictureSchema) }));
